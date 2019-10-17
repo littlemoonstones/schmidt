@@ -40,7 +40,7 @@
      //     }
      // })
 
-     console.log("dataset", dataset);
+     //  console.log("dataset", dataset);
 
      // 1. Add the SVG to the page and employ #2
      var svg = d3.select("body").append("svg")
