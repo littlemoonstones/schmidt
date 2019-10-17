@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div id="slider"></div>
+    <div>
+        <span> delta t: </span>
+        <span id="value"></span>
+    </div>
+    <div>
+        <span>delta x: </span>
+        <span id="slider_value"></span><br>
+    </div>
+    <input type="range" id="slider" value="0.2" min="0.01" max="0.3" step="0.01" /><br>
+
+    <span>N = </span>
+    <span id="tt"></span>
+</body>
+
+</html>
+<script src="https://d3js.org/d3.v5.min.js"></script>
+<script src="./js/chart.js"></script>
+<script>
+    $(document).ready(function() {
+        var del_x = $('input').val();
+        $('#slider_value').html(del_x);
+        var alpha = 2 * Math.pow(10, -5),
+            del_t = Math.pow(del_x, 2) / (2 * alpha);
+        var fl_del_t = Math.round(del_t * 1000) / 1000
+        $('#value').text(fl_del_t);
+        var data = cal(del_t);
+        var N = data[0],
+            dataset = data[1];
+        $('#tt').text(N);
+        drawChart(N, dataset);
+        // console.log(Math.pow(10, -5));
+    });
+
+    $(document).on('input change', '#slider', function() {
+        var del_x = $(this).val();
+        $('#slider_value').html(del_x);
+        var alpha = 2 * Math.pow(10, -5),
+            del_t = Math.pow(del_x, 2) / (2 * alpha);
+        var fl_del_t = Math.round(del_t * 1000) / 1000
+        $('#value').text(fl_del_t);
+        var data = cal(del_t);
+        var N = data[0],
+            dataset = data[1];
+        $('#tt').text(N);
+        $('svg').remove();
+        drawChart(N, dataset);
+    });
+
+    function cal(del_t) {
+        var N = Math.round(6000 / del_t);
+        var Ta = 0,
+            Tf = 100,
+            T0 = (Ta + Tf) / 2;
+        var T = new Array(N + 1);
+        for (var i = 0; i < T.length; i++) {
+            T[i] = new Array(N + 1);
+        }
+
+        for (var i = 1; i < T.length; i++) {
+            T[0][i] = 100;
+        }
+        for (var t = 0; t < T.length; t++) {
+            T[t][1] = 0;
+        }
+        T[0][1] = T0;
+
+        for (var t = 1; t < T.length; t++) {
+            for (var n = 2; n < N; n++) {
+                T[t][n] = (T[t - 1][n - 1] + T[t - 1][n + 1]) / 2;
+            }
+            T[t][N] = T[t - 1][N - 1];
+        }
+        var dataset = [];
+        for (var i = 1; i < T.length; i++) {
+            dataset.push({
+                "y": T[N][i]
+            });
+        }
+        updateChart(N, dataset);
+        console.log(T);
+        return [N, dataset];
+    }
+</script>
+<script>
+</script>
+<style type="text/css">
+    /* 13. Basic Styling with CSS */
+    /* Style the lines by removing the fill and applying a stroke */
+    
+    .line {
+        fill: none;
+        stroke: #ffab00;
+        stroke-width: 2;
+    }
+    
+    .overlay {
+        fill: none;
+        pointer-events: all;
+    }
+    /* Style the dots by assigning a fill and stroke */
+    
+    .dot {
+        fill: #ffab00;
+        stroke: #fff;
+    }
+    
+    .focus circle {
+        fill: none;
+        stroke: steelblue;
+    }
+</style>
