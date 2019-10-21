@@ -27,6 +27,7 @@
 
     <span>N = </span>
     <span id="tt"></span>
+    <div><input type="checkbox" name="" id="line">Show line</div>
 </body>
 
 </html>
@@ -34,22 +35,20 @@
 <script src="./js/chart.js"></script>
 <script>
     $(document).ready(function () {
-        var del_x = $('input').val();
-        $('#slider_value').html(del_x);
-        var alpha = 2 * Math.pow(10, -5),
-            del_t = Math.pow(del_x, 2) / (2 * alpha);
-        var fl_del_t = Math.round(del_t * 1000) / 1000
-        $('#value').text(fl_del_t);
-        var data = cal(del_t, del_x);
-        var N = data[0],
-            dataset = data[1];
-        $('#tt').text(N);
-        drawChart(N, dataset);
+        preData();
+        $('#line').click(()=>showLine());
+
         // console.log(Math.pow(10, -5));
     });
 
     $(document).on('input change', '#slider', function () {
-        var del_x = $(this).val();
+        $('svg').remove();
+        preData();
+        showLine();
+
+    });
+    function preData(){
+        var del_x = $("input[id='slider']").val();
         $('#slider_value').html(del_x);
         var alpha = 2 * Math.pow(10, -5),
             del_t = Math.pow(del_x, 2) / (2 * alpha);
@@ -59,9 +58,15 @@
         var N = data[0],
             dataset = data[1];
         $('#tt').text(N);
-        $('svg').remove();
         drawChart(N, dataset);
-    });
+    }
+    function showLine() {
+        if ($('#line').prop('checked')) {
+            $('.dotted').css('stroke-width', 1);
+        } else {
+            $('.dotted').css('stroke-width', 0);
+        }
+    }
 
     function cal(del_t, del_x) {
         var N = Math.round(6000 / del_t);
@@ -92,11 +97,11 @@
         for (var i = 1; i < T.length; i++) {
             dataset.push({
                 "y": T[N][i],
-                "x": (i - 1) * 1/(N-1)
+                "x": (i - 1) * 1 / (N - 1)
             });
         }
         // updateChart(N, dataset);
-        console.log(dataset);
+        // console.log(dataset);
         return [N, dataset];
     }
 </script>
