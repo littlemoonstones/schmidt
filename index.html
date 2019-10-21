@@ -78,6 +78,7 @@
         }
         for (var t = 0; t < T.length; t++) {
             T[t][1] = 0;
+            T[t][0] = 0;
         }
         T[0][1] = T0;
 
@@ -88,13 +89,14 @@
             T[t][N] = T[t - 1][N - 1];
         }
         var dataset = [];
-        for (var i = 1; i < T.length; i++) {
+        for (var i = 0; i < T.length; i++) {
             dataset.push({
-                "y": T[N][i]
+                "y": T[N][i],
+                "x": (i)*1/N
             });
         }
         // updateChart(N, dataset);
-        // console.log(T);
+         console.log(dataset);
         return [N, dataset];
     }
 </script>
