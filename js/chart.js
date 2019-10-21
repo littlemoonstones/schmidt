@@ -15,7 +15,7 @@ function drawChart(N, dataset) {
 
     // 5. X scale will use the index of our data
     var xScale = d3.scaleLinear()
-        .domain([0, n - 1]) // input
+        .domain([0, 1]) // input
         .range([1, width]); // output
 
     // 6. Y scale will use the randomly generate number 
@@ -26,7 +26,7 @@ function drawChart(N, dataset) {
     // 7. d3's line generator
     var line = d3.line()
         .x(function(d, i) {
-            return xScale(i);
+            return xScale(d.x);
         }) // set the x values for the line generator
         .y(function(d) {
             return yScale(d.y);
@@ -60,7 +60,7 @@ function drawChart(N, dataset) {
               "translate(" + (width/2) + " ," + 
                              (height + margin.top-10) + ")")
         .style("text-anchor", "middle")
-        .text("N");
+        .text("x (mm)");
    // Y-label
    svg.append("text")
         .attr("transform", "rotate(-90)")
@@ -87,7 +87,7 @@ function drawChart(N, dataset) {
         .enter().append("circle") // Uses the enter().append() method
         .attr("class", "dot") // Assign a class for styling
         .attr("cx", function(d, i) {
-            return xScale(i)
+            return xScale(d.x)
         })
         .attr("cy", function(d) {
             return yScale(d.y)
