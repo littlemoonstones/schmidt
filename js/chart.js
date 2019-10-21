@@ -1,11 +1,11 @@
 function drawChart(N, dataset) {
     // 2. Use the margin convention practice 
     var margin = {
-            top: 50,
-            right: 50,
-            bottom: 50,
-            left: 50
-        },
+        top: 50,
+        right: 50,
+        bottom: 50,
+        left: 50
+    },
         width = window.innerWidth - margin.left - margin.right // Use the window's width 
         ,
         height = (window.innerHeight - margin.top - margin.bottom) / 2; // Use the window's height
@@ -25,10 +25,10 @@ function drawChart(N, dataset) {
 
     // 7. d3's line generator
     var line = d3.line()
-        .x(function(d, i) {
+        .x(function (d, i) {
             return xScale(d.x);
         }) // set the x values for the line generator
-        .y(function(d) {
+        .y(function (d) {
             return yScale(d.y);
         }) // set the y values for the line generator 
         .curve(d3.curveLinear) // apply smoothing to the line
@@ -54,22 +54,22 @@ function drawChart(N, dataset) {
         .attr("class", "x axis")
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(xScale)); // Create an axis component with d3.axisBottom
-   // X-label
-   svg.append("text")             
+    // X-label
+    svg.append("text")
         .attr("transform",
-              "translate(" + (width/2) + " ," + 
-                             (height + margin.top-10) + ")")
+            "translate(" + (width / 2) + " ," +
+            (height + margin.top - 10) + ")")
         .style("text-anchor", "middle")
         .text("x (mm)");
-   // Y-label
-   svg.append("text")
+    // Y-label
+    svg.append("text")
         .attr("transform", "rotate(-90)")
         .attr("y", 0 - margin.left)
-        .attr("x",0 - (height / 2))
+        .attr("x", 0 - (height / 2))
         .attr("dy", "1em")
         .style("text-anchor", "middle")
-        .text("Temperature (˚C)");      
-        
+        .text("Temperature (˚C)");
+
     // 4. Call the y axis in a group tag
     svg.append("g")
         .attr("class", "y axis")
@@ -86,16 +86,33 @@ function drawChart(N, dataset) {
         .data(dataset)
         .enter().append("circle") // Uses the enter().append() method
         .attr("class", "dot") // Assign a class for styling
-        .attr("cx", function(d, i) {
+        .attr("cx", function (d, i) {
             return xScale(d.x)
         })
-        .attr("cy", function(d) {
+        .attr("cy", function (d) {
             return yScale(d.y)
         })
         .attr("r", 2)
-        .on("mouseover", function(a, b, c) {
+        .on("mouseover", function (a, b, c) {
             console.log(a)
             this.attr('class', 'focus')
         })
-        .on("mouseout", function() {})
+        .on("mouseout", function () { })
+
+
+    svg.selectAll(".dotted-line")
+        .data(dataset)
+        .enter()
+        .append("line")
+        .attr("x1", function (d) {
+            return xScale(d.x)
+        })  //<<== change your code here
+        .attr("y1", 0)
+        .attr("x2", (d) => xScale(d.x))  //<<== and here
+        .attr("y2", height)
+        .attr("class", "dotted")
+        .style("stroke-width", 0)
+        .style("stroke", "red")
+        .style("stroke-dasharray", ("3, 3"))
+        .style("fill", "none");
 }
