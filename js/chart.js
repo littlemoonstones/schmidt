@@ -1,37 +1,43 @@
+var margin = {
+    top: 50,
+    right: 50,
+    bottom: 50,
+    left: 50
+};
+var width = window.innerWidth - margin.left - margin.right // Use the window's width 
+    ,
+    height = (window.innerHeight - margin.top - margin.bottom) / 2; // Use the window's height
+
+// 5. X scale will use the index of our data
+var xScale = d3.scaleLinear()
+    .domain([0, 1]) // input
+    .range([1, width]); // output
+
+// 6. Y scale will use the randomly generate number 
+var yScale = d3.scaleLinear()
+    .domain([0, 100]) // input 
+    .range([height, 0]); // output 
+
+// 7. d3's line generator
+var line = d3.line()
+    .x(function (d, i) {
+        return xScale(d.x);
+    }) // set the x values for the line generator
+    .y(function (d) {
+        return yScale(d.y);
+    }) // set the y values for the line generator 
+    .curve(d3.curveLinear) // apply smoothing to the line
 function drawChart(N, dataset) {
     // 2. Use the margin convention practice 
-    var margin = {
-        top: 50,
-        right: 50,
-        bottom: 50,
-        left: 50
-    },
-        width = window.innerWidth - margin.left - margin.right // Use the window's width 
+
+    var width = window.innerWidth - margin.left - margin.right // Use the window's width 
         ,
         height = (window.innerHeight - margin.top - margin.bottom) / 2; // Use the window's height
 
     // The number of datapoints
     var n = N;
 
-    // 5. X scale will use the index of our data
-    var xScale = d3.scaleLinear()
-        .domain([0, 1]) // input
-        .range([1, width]); // output
 
-    // 6. Y scale will use the randomly generate number 
-    var yScale = d3.scaleLinear()
-        .domain([0, 100]) // input 
-        .range([height, 0]); // output 
-
-    // 7. d3's line generator
-    var line = d3.line()
-        .x(function (d, i) {
-            return xScale(d.x);
-        }) // set the x values for the line generator
-        .y(function (d) {
-            return yScale(d.y);
-        }) // set the y values for the line generator 
-        .curve(d3.curveLinear) // apply smoothing to the line
 
     // 8. An array of objects of length N. Each object has key -> value pair, the key being "y" and the value is a random number
     // var dataset = d3.range(n).map(function(d) {
@@ -115,4 +121,21 @@ function drawChart(N, dataset) {
         .style("stroke", "red")
         .style("stroke-dasharray", ("3, 3"))
         .style("fill", "none");
+}
+
+function update(dataset) {
+    var width = window.innerWidth - margin.left - margin.right // Use the window's width 
+        ,
+        height = (window.innerHeight - margin.top - margin.bottom) / 2; // Use the window's height
+
+    var svg = d3.select("body");
+    svg.selectAll('.line')
+        .datum(dataset)
+        .attr("d", line);
+    svg.selectAll(".dot")
+        .data(dataset)
+        .attr("cy", function (d) {
+            return yScale(d.y)
+        })
+
 }
