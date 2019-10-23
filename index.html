@@ -16,16 +16,23 @@
     <h1>EXAMPLE 5.4-1 [P.381]</h1>
     <div id="slider"></div>
     <div>
-        <span> delta t: </span>
+        <span>delta t: </span>
         <span id="value"></span>
     </div>
     <div>
         <span>delta x: </span>
         <span id="slider_value"></span><br>
     </div>
-    <input type="range" id="slider" value="0.2" min="0.01" max="0.3" step="0.01" /><br>
+    <div>
+        <input type="range" id="slider" value="0.2" min="0.01" max="0.3" step="0.01" /><br>
+    </div>
+    <div>
+        <span>n * delta t, n: </span>
+        <span id="slider-t_value"></span><br>
+        <input type="range" id="slider-t" value="6" min="1" max="6" step="1">
+    </div>
 
-    <span>N = </span>
+    <span>n = </span>
     <span id="tt"></span>
     <div><input type="checkbox" name="" id="line">Show line</div>
 </body>
@@ -34,22 +41,45 @@
 <script src="https://d3js.org/d3.v5.min.js"></script>
 <script src="./js/chart.js"></script>
 <script>
+    var data;
     $(document).ready(function () {
-        preData();
-        $('#line').click(()=>showLine());
-
+        var n = $("input[id='slider-t']").val();
+        data = preData();
+        $('#slider-t_value').text(n);
+        drawChart(data.N, data.dataset);
+        $('#line').click(() => showLine());
+        // console.log(data.T);
         // console.log(Math.pow(10, -5));
     });
 
     $(document).on('input change', '#slider', function () {
         $('svg').remove();
-        preData();
+        data = preData();
+        var n = $("input[id='slider-t']").val();
+        $('#slider-t_value').text(n);
+        
+        drawChart(data.N, data.dataset);
         showLine();
 
     });
-    function preData(){
+
+    $(document).on('input change', '#slider-t', function () {
+        var n = $("input[id='slider-t']").val();
+        $('#slider-t_value').text(n);
+        var dataset = [], T = data.T;
+        for (var i = 1; i < T.length; i++) {
+            dataset.push({
+                "y": T[n][i],
+                "x": (i - 1) * 1 / (data.N - 1)
+            });
+        }
+        update(dataset);
+
+    });
+
+    function preData() {
         var del_x = $("input[id='slider']").val();
-        $('#slider_value').html(del_x);
+        $('#slider_value').text(del_x);
         var alpha = 2 * Math.pow(10, -5),
             del_t = Math.pow(del_x, 2) / (2 * alpha);
         var fl_del_t = Math.round(del_t * 1000) / 1000
@@ -58,8 +88,9 @@
         var N = data[0],
             dataset = data[1];
         $('#tt').text(N);
-        drawChart(N, dataset);
+        return {'N': N, 'dataset':dataset, 'T':data[2]};
     }
+
     function showLine() {
         if ($('#line').prop('checked')) {
             $('.dotted').css('stroke-width', 1);
@@ -70,6 +101,7 @@
 
     function cal(del_t, del_x) {
         var N = Math.round(6000 / del_t);
+        $("input[id='slider-t']").attr('max', N);
         var Ta = 0,
             Tf = 100,
             T0 = (Ta + Tf) / 2;
@@ -102,7 +134,7 @@
         }
         // updateChart(N, dataset);
         // console.log(dataset);
-        return [N, dataset];
+        return [N, dataset, T];
     }
 </script>
 <script>
